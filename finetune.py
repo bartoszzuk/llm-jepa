@@ -292,6 +292,8 @@ def load_and_prepare_dataset(data_file, tokenizer, model_name,
     tokenized_dataset = dataset.map(
         tokenize_conversations,
         batched=True,
+        batch_size=512,
+        num_proc=min(8, os.cpu_count() // 2),
         remove_columns=dataset.column_names
     )
 
@@ -545,6 +547,12 @@ class RepresentationTrainer(Trainer):
         index_tensor = torch.tensor(index).to(input_ids.device)
         if self.debug == 1 and torch.cuda.current_device() == 0:
             print(index_tensor)
+
+        batch_size = input_ids.shape[0]
+        last_tokens = input_ids[range(batch_size), index]
+
+        if not torch.all(last_tokens == self.processing_class.eos_token_id):
+            raise ValueError('Not all last tokens were eos token.')
 
         return index_tensor
 
