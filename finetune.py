@@ -27,8 +27,8 @@ from transformers import (
 from datasets import load_dataset
 
 SMOLLM2_CHAT_TEMPLATE = ("{% for message in messages %}{{'<|im_start|>' + message['role'] + '\n' + message["
-                         "'content'] + '<|im_end|>' + '\n'}}{% endfor %}{% if add_generation_prompt %}{{ "
-                         "'<|im_start|>assistant\n' }}{% endif %}")
+                         "'content'] + '<|im_end|>'}}{% if not loop.last %}{{ '\n' }}{% endif %}{% endfor %}"
+                         "{% if add_generation_prompt %}{{ '\n<|im_start|>assistant\n' }}{% endif %}")
 
 
 def get_messages(model_name, messages):
