@@ -23,6 +23,8 @@ import logging
 import matplotlib.pyplot as plt
 from sklearn.manifold import TSNE
 
+from finetune import SMOLLM2_CHAT_TEMPLATE
+
 # Set up logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -217,6 +219,10 @@ def load_model_and_tokenizer(model_name, original_model_name, load_in_8bit=False
         )
     
     model.eval()  # Set to evaluation mode
+
+    if model_name == 'HuggingFaceTB/SmolLM2-135M-Instruct':
+        tokenizer.pad_token = '<|eot_id|>'
+        tokenizer.chat_template = SMOLLM2_CHAT_TEMPLATE
     
     print(f"Model loaded on device: {model.device if hasattr(model, 'device') else 'multi-device'}")
     return model, tokenizer
